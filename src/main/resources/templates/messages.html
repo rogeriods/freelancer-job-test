@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<title>Freelancer JSON Clipboard</title>
+	
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.css" />
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" />
+</head>
+<body>
+	<div class="container-fluid">
+		<br />
+		<table id="dataTable" class="table table-sm table-striped table-bordered" style="width: 100%">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Entity Type</th>
+					<th>Entity NBR</th>
+					<th>Stat Code</th>
+					<th>Outgoing Message</th>
+					<th>Incoming Message</th>
+					<th hidden="true">Start Messaging</th>
+					<th hidden="true">End Messaging</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="msgs : ${ptlMessages}">
+					<td th:text="${msgs.id}">ID</td>
+					<td th:text="${msgs.entityType}">ID</td>
+					<td th:text="${msgs.entityNbr}">ID</td>
+					<td th:text="${msgs.statCode}">ID</td>
+					<td th:text="${msgs.outgoingMessage}">ID</td>
+					<td th:text="${msgs.incomingMessage}">ID</td>
+					<td hidden="true" th:text="${msgs.startMessagingDateTime}">ID</td>
+					<td hidden="true" th:text="${msgs.endMessagingDateTime}">ID</td>
+					<td width="130" align="center">
+						<button id="btn-${msgs.id}" class="btn btn-sm btn-outline-primary" onClick="callModal(this.closest('tr'))">
+							Clipboard JSON
+						</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<!-- Modal -->
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" 
+			aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabel">JSON Data</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">x</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						JSON Entity Type: <code id="jsonString"></code> Copied to clipboard!
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+	<script	src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+	<script	src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+	<script	src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+	<script	src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+	<script>		
+		function callModal(data) {
+			var objectToJSON = {
+				id: data.cells[0].textContent,
+				entityType: data.cells[1].textContent,
+				entityNbr: data.cells[2].textContent,
+				statCode: data.cells[3].textContent,
+				outgoingMessage: data.cells[4].textContent,
+				incomingMessage: data.cells[5].textContent,
+				startMessagingDateTime: data.cells[6].textContent,
+				endMessagingDateTime: data.cells[7].textContent
+			}
+			
+			// Add JSON to clipboard
+			navigator.clipboard.writeText(JSON.stringify(objectToJSON, null, 2))
+				.then(() => {
+			  	console.log('Text copied to clipboard');
+			  })
+			  .catch(err => {
+			    // This can happen if the user denies clipboard permissions:
+			    console.error('Could not copy text: ', err);
+			  });
+			
+			$('#jsonString').text(objectToJSON.entityType);
+			$('#exampleModal').modal();
+		}		
+		
+		$(document).ready(function() {
+			$('#dataTable').DataTable();
+		});
+	</script>
+</body>
+</html>
